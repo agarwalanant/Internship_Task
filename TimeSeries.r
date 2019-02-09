@@ -4,6 +4,7 @@ library("ggplot2")
 library("forecast")
 library("tseries")
 library("tidyverse")
+library(quantmod)
 library(readxl)
 library(zoo)
 
@@ -47,7 +48,7 @@ season <- function(source,apmc, commodity,attribute,freq,plot = FALSE){
         plot(decomp) 
     }
         test <- adf.test(count_ma,alternative = "stationary")$p.value
-    if(test > 0){
+    if(test > 0.05){
 
     flag <<- rbind(flag, c(apmc,commodity))
    }
@@ -58,8 +59,8 @@ season <- function(source,apmc, commodity,attribute,freq,plot = FALSE){
 }
 
 final <- function (apmc,comm,attribute){
-ans1 <- season(source = data, apmc = as.character(apmc),commodity = as.character(comm) ,attribute = attribute,freq=4)
-a <- subset(msp_data, commodity == comm)
+ans1 <- season(source = data, apmc = as.character(apmc),commodity = as.character(comm) ,attribute = attribute,freq=3)
+a <- subset(msp_data, commodity == as.character(comm))
 a <- subset(a , year > 2013)
 
 ggplot()+
@@ -69,17 +70,21 @@ geom_line(data= data.frame(ans1[1]) , aes(y = as.numeric(min_price) , x= as.nume
     }
 
 
-final(apmc = "ahmednagar", comm = "bajri", attribute = "min_price")
+apmc_f <- c(unique(data$APMC))
 
-flag
+    data1 <- subset(data, APMC == apmc_f[1])
+    comm_msp <- c(unique(msp_data$commodity))
+    comm_data <- c(unique(data1$Commodity))
+    comm_f <- intersect(comm_msp,comm_data)
 
-apmc <- unique(data$APMC)
-comm <- unique(msp_data$commodity)
-
-str(comm)
-
-for(i in apmc){
-    for(j in comm){
-        final(apmc = i,comm = j,attribute = "min_price")
+for(i in 1:340){
+    data1 <- subset(data, APMC == apmc_f[i])
+    comm_msp <- c(unique(msp_data$commodity))
+    comm_data <- c(unique(data1$Commodity))
+    comm_f <- intersect(comm_msp,comm_data)
+    for(j in comm_f){
+        final(apmc =apmc_f[i] ,comm = j,attribute = "min_price")
     }
 }
+
+flag
