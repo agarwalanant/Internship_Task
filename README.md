@@ -16,4 +16,10 @@ The final deseasonized attribute was then plotted with the MSP price of that par
 # Major Hurdles encountered
 Commodities were not commom in both the database provided.
 
+New to time series data always donE EDA and Statistical inference
+
+NOTE : Used R not Python because according to me R has more feature for dataanalysis things and python has more supprt for development of Deep Learning models.
+
+
+
 
